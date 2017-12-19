@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>动量策略计算</title>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/extend.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+		$("#btnCalc").click(function(){
+			
+				//去掉 -- "," 转换 ( 成 -
+					var source = trim($("#source").val().replace(/--/g,'').replace(/\(/g,'-').replace(/\,/g,'').replace(/\$/g,''))
+							, zq = window.parseFloat($("#txtZQ").val());
+
+					
+					if(!source){
+						alert("请输入值");
+						return;
+					}
+					
+					var orginArr = source.split('\n'), destArr = [];
+				
+					if(orginArr.length < zq){
+							alert("数据行数必须大于周期数！");
+							return;
+					}
+					
+					
+					var item1,item2, v1, v2, item1Arr, item2Arr, result, sub =0, div = 0, resultText = ''
+							, sourceArr = orginArr, avgArr = [], avg, avgSubArr = [], avgArrList = [];
+
+					for(var i = 0; i < zq;i++){
+						avgArr[i] = trim(sourceArr[i]);
+					}
+					
+					avgSubArr = avgArr[0].split(/\s+/g);
+					
+					for(var i = 0; i < avgSubArr.length;i++){
+						for(var j = 0; j < avgArr.length;j++){
+							avgArrList[j] = trim(avgArr[j]).split(/\s+/g)[i];
+						}
+						
+						avg = calcAvg(avgArrList);
+						resultText += avgArrList[avgArrList.length - 1] + "\t" + avg + "\t";
+					}
+					resultText += "\r\n";
+					
+					
+					for(var i = zq; i < sourceArr.length;i++){
+						
+						avgArr.shift();
+						avgArr[zq - 1] = sourceArr[i];
+						
+						for(var k = 0; k < avgSubArr.length;k++){
+							for(var j = 0; j < avgArr.length;j++){
+								avgArrList[j] = trim(avgArr[j]).split(/\s+/g)[k];
+							}
+							
+							avg = calcAvg(avgArrList);
+							resultText += avgArrList[avgArrList.length - 1] + "\t" + avg + "\t";
+						}
+					
+						
+						resultText +=  "\r\n";		
+											
+					}
+					
+					$("#result").val(resultText);			
+						
+			
+			});
+			
+	});
+	
+	
+	function calcAvg(avgArr){
+		var sum = 0;
+		for(var i = 0; i < avgArr.length;i++){
+			 sum += parseFloat(avgArr[i]);
+		}
+		
+		return sum.toFixed(2);
+		
+	}
+
+
+</script>
+</head>
+<body>
+	<div>
+计算规则：指数过去12个月的总回报
+	</div>
+	<div>
+均线周期：<input type="text" id="txtZQ" width="50px" value="12"/>
+	</div>
+<div>
+	<div>
+	<textarea row="10" cols="100" id="source" style="margin: 0px; height: 128px; width: 100%;">
+2575.26	6727.67	23377.24
+2519.36	6495.96	22405.09
+2471.649902	6428.660156	21948.09961
+2470.300049	6348.120117	21891.11914
+2423.409912	6140.419922	21349.63086
+2411.800049	6198.52002	21008.65039
+2384.199951	6047.609863	20940.50977
+2362.719971	5911.740234	20663.2207
+2363.639893	5825.439941	20812.24023
+2278.870117	5614.790039	19864.08984
+2238.830078	5444.5	19762.59961
+2198.810059	5323.680176	19123.58008
+2126.149902	5189.140137	18142.41992
+
+		</textarea>
+		</div>
+		<div>
+			<input type="button" id="btnCalc" value="开始计算" />
+
+			</div>
+			<div>
+		<textarea row="10" cols="100" id="result" style="margin: 0px; height: 128px; width: 100%;"></textarea>
+		</div>
+		
+</body>
+</html>

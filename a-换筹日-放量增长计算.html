@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>增长率计算</title>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/extend.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+		$("#btnCalc").click(function(){
+			
+				//去掉 -- "," 转换 ( 成 -
+					var source = trim($("#source").val().replace(/--/g,'').replace(/\(/g,'-').replace(/\,/g,'').replace(/\$/g,''));
+					
+					if(!source){
+						alert("请输入值");
+						return;
+					}
+					
+					var sourceArr = source.split('\n');
+			
+					
+					var item1,item2, v1, v2, item1Arr, item2Arr, result,numArr , sub =0, div = 0, resultText = '';
+				
+					
+
+					for(var i = 0; i < sourceArr.length;i++){
+						item1 = trim(sourceArr[i]);						
+						item1Arr = item1.split(/\s+/g);
+						
+						resultText +=  item1 + "\n"; 
+						
+						for(var j =0; j < item1Arr.length;j++){
+							numArr = item1Arr[j].split(/\//g);
+							try{								
+									v1 = trim(numArr[0]);
+									v2 = trim(numArr[1]);															
+							}catch(e){
+								v1= '';
+								v2 = '';
+								
+							}
+						
+							if(!phutil.isNumber(v1) && v1){
+								alert(v1 + "数据有问题");
+							}
+							
+							if(!phutil.isNumber(v2) && v2){
+								alert(v2 + "数据有问题");
+							}
+							
+							if(phutil.isNumber(v1) && phutil.isNumber(v2)){
+								v1 = window.parseFloat(v1);
+								v2 = window.parseFloat(v2);
+								
+								sub = phutil.accSub(v2,v1);
+								div = phutil.accDiv(sub, v1).toFixed(4);
+	
+								//如果，v2 大于 v1，而 结果 为 负数，则将 结果变为正；v2 小于 v1，而 结果 为 正数，则将 结果变为负
+								if(v2 > v1 && div < 0){
+									div = 0 - div;
+								}else if(v2 < v1 && div > 0){
+									div = 0 - div;
+								}
+								
+								result = phutil.toPercent(div) + "\t  " ;    
+							}else{
+								result = " ";
+							}
+							
+							
+							resultText += result + "\t   ";
+							
+						}
+						
+						resultText += "\r\n";
+					}
+					
+					$("#result").val(resultText);				
+			
+			});
+	});
+	
+
+
+</script>
+</head>
+<body>
+	<div>支持格式67.16/79.56		25.01/35.2</div>
+	<div>
+	<textarea row="10" cols="100" id="source" style="margin: 0px; height: 128px; width: 100%;"></textarea>
+		</div>
+		<div>
+			<input type="button" id="btnCalc" value="开始计算" />
+
+			</div>
+			<div>
+		<textarea row="10" cols="100" id="result" style="margin: 0px; height: 128px; width: 100%;"></textarea>
+		</div>
+		
+		
+		
+	
+</body>
+</html>

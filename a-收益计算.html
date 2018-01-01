@@ -14,13 +14,14 @@ $(document).ready(function(){
 		$("#btnCalc").click(function(){
 							
 					$('#tbResult').html('');
-					$('#tbResult').append('<tr><td style="width:80px">年龄</td><td style="width:80px">每年定投</td><td style="width:100px">总本金</td><td style="width:100px">收益</td><td style="width:100px">总金额</td></tr>');
+					$('#tbResult').append('<tr><td style="width:80px">年龄</td><td style="width:100px">本金</td><td style="width:100px">杠杆后金额</td><td style="width:100px">收益</td><td style="width:100px">总金额</td></tr>');
 		
 					var money = window.parseFloat(trim($("#money").val())), 					
 						age = window.parseFloat(trim($("#startAge").val())), 
 						endAge = window.parseFloat(trim($("#endAge").val())), 
 						initMoney = window.parseFloat(trim($("#initMoney").val())), 
 						interest = window.parseFloat(trim($("#interest").val())), 
+						level = window.parseFloat(trim($("#level").val())), 
 						result = '', 
 						curMoney = 0,						
 						totalIncomeMoney = 0,
@@ -29,7 +30,8 @@ $(document).ready(function(){
 						curAge = 0,
 						profit = 0,
 						totalProfit = 0,
-						ciyle = endAge - age;
+						ciyle = endAge - age,
+						levelMoney = 0;
 					
 					if(!ciyle || !age || !initMoney || !interest){
 						alert("请输入值");
@@ -41,19 +43,20 @@ $(document).ready(function(){
 					curAge = age;
 					for(var i = 1; i <= ciyle; i++){
 							curMoney += money;
-							profit = parseInt(curMoney * interest);
+							levelMoney = parseInt(curMoney * level);
+							profit = parseInt(levelMoney * interest);
 							totalPrincipal = curMoney;
 							totalProfit += profit;
 							curMoney = profit + curMoney;
 							totalIncomeMoney += money;							
 							curAge += 1;
 							
-							$("#tbResult").append("<tr><td>" + curAge + "</td><td>" + money + "</td><td>" + 
-									totalPrincipal + "</td><td>" + profit + "</td><td>" + curMoney + "</td></tr>");
+							$("#tbResult").append("<tr><td>" + curAge + "</td><td>" + totalPrincipal + "</td><td>" + 
+								levelMoney	 + "</td><td>" + profit + "</td><td>" + curMoney + "</td></tr>");
 					}
 					
 					
-					result += "总投入  " + totalIncomeMoney  + " 总收益  " + totalProfit + "总金额   " + curMoney;
+					result += "每年定投：" + money + "，杠杆：" + level +  "，收益率：" + interest +  "，总投入：" + totalIncomeMoney + " ，总收益：" + totalProfit + "，总金额：" + curMoney;
 										
 					$("#result").text(result);				
 			
@@ -72,7 +75,7 @@ $(document).ready(function(){
 <div>
 结束年龄：<input type="text" id="endAge" width="50px"  value="64"/>
 </div>
-初始本金：<input type="text" id="initMoney" width="50px" value="285000"/>
+初始本金：<input type="text" id="initMoney" width="50px" value="265000"/>
 	</div>
 <div>
 <div>
@@ -82,6 +85,9 @@ $(document).ready(function(){
 每年收益：<input type="text" id="interest" width="50px" value="0.1"/>
 </div>
 <div>
+杠杆：<input type="text" id="level" width="50px" value="1.8"/>
+</div>
+<div>
 		<input type="button" id="btnCalc" value="开始计算" />
 </div>
 <div>
@@ -89,7 +95,7 @@ $(document).ready(function(){
 		</div>
 		<div>
 	<table id="tbResult" border=1 style="border-collapse:collapse">
-		<tr><td style="width:80px">年龄</td><td style="width:80px">每年定投</td><td style="width:100px">总本金</td><td style="width:100px">收益</td><td style="width:100px">总金额</td></tr>
+		<tr><td style="width:80px">年龄</td><td style="width:100px">本金</td><td style="width:100px">杠杆后金额</td><td style="width:100px">收益</td><td style="width:100px">总金额</td></tr>
 	</table>
 	
 	</div>

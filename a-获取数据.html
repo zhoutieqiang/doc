@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>获取数据</title>
+<meta charset="UTF-8">
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+<META HTTP-EQUIV="expires" CONTENT="0">
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate">
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/extend.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+	$("#btnCalc").click(function(){
+		var urlpattern = $('#url').val()
+			, days = $('#days').val()
+			, stocks = $('#symbol').val()
+			, result = ''
+			, arrResult = []
+			, url = '';
+
+			if(!stocks){
+				alert('请输入股票代码！');
+				return;
+			}
+
+			var arrStock = stocks.split(',');
+
+			for(var i = 0; i < arrStock.length;i++){
+				
+				url = urlpattern.replace('{stock}', arrStock[i]);
+
+				$.ajax({
+					  url: url,
+					  async: false, 
+					  dataType: 'json',
+					  method: 'GET',
+					  success: function(data) {
+						 if (data.ret == 0) {
+							var index = 0;
+							for(var i = data.items.length-1; i >= 0;i-- ){
+							//	"open": 5312.73,
+							//"time": 1475035200000,
+							//"volume": 1723683130,
+							//"high": 5320.62,
+							//"low": 5284.84,
+							//"close": 5318.55
+								index++;
+								var item = data.items[i]
+									,date = new Date(item.time)
+									, object = {}
+									,txt = '';
+								
+
+								if(arrResult.length < index){
+									object.time = phutil.dateformat(date, 'yyyy-MM-dd');
+								}else{
+									txt = arrResult[index - 1].txt;
+									object.time = arrResult[index - 1].time;
+								}
+								
+								txt +=  item.close + '\t' + item.volume + '\t';
+
+								object.txt = txt;
+								arrResult[index - 1] = object;
+
+
+								if(i == data.items.length - days){
+									break;
+								}
+
+								
+							}
+						 }
+
+						
+					 },
+					 error: function(xhr) {
+						 alert('error:' + xhr);
+					 }
+			  });
+
+		  }
+
+
+		  $(arrResult).each(function(i, t){
+			result += t.time + '\t' + t.txt + '\r\n';		  
+		  });
+
+		 $('#result').html(result);
+	});
+	
+});
+
+</script>
+</head>
+<body>
+	<div>
+		URL地址：<input type="text" id="url" style=" width:1000px" value="https://hq.laohu8.com/stock_info/candle_stick/day/{stock}?_s=1525327247312&beginTime=-1&endTime=-1&limit=40&delay=false" />
+	</div>
+	<div>
+		股票代码（","分割）：<input type="text" id="symbol" style=" width:1000px" value=".INX,.IXIC,.DJI,NVDA,TAL" />
+	</div>
+	
+		<div>
+		获取天数:<input type="text" id="days"  value="6"  />&nbsp;&nbsp;
+			<input type="button" id="btnCalc" value="开始加载" />
+
+			</div>
+			<div>
+		<textarea row="10" cols="100" id="result" style="margin: 0px; height: 128px; width: 100%;"></textarea>
+		</div>
+		
+	
+</body>
+</html>
